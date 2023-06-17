@@ -1,26 +1,46 @@
 #!/bin/bash
 
+sudo su
+
 sudo apt update -y
 
-sudo apt install default-jre -y
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+sudo apt-get update
+
+sudo apt-get install jenkins
+
+sudo apt update
+
+sudo apt install openjdk-11-jre
 
 java -version
 
-sudo apt update -y
+openjdk version "11.0.12" 2021-07-20
 
-wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+OpenJDK Runtime Environment (build 11.0.12+7-post-Debian-2)
 
-sudo sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+OpenJDK 64-Bit Server VM (build 11.0.12+7-post-Debian-2, mixed mode, sharing)
+sudo wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+sudo dnf upgrade
+# Add required dependencies for the jenkins package
+sudo dnf install java-11-openjdk
+sudo dnf install jenkins
+sudo systemctl daemon-reload
 
-sudo apt update -y
+sudo systemctl enable jenkins
 
-sudo add-apt-repository universe -y
+sudo systemctl start jenkins
 
-sudo apt-get install jenkins -y
+sudo systemctl status jenkins
 
-sudo service jenkins start
-
-cat /var/lib/jenkins/secrets/initialAdminPassword
 
 #sudo service jenkins status
 
